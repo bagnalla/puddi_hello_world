@@ -1,15 +1,15 @@
 var Puddi = require('./puddi/puddi.js');
-var Drawable = require('./puddi/puddidrawable.js');
+var PuddiObject = require('./puddi/puddiobject.js');
 var Vector = require('victor');
 
 var Square = function(puddi, parent) {
     // Call superclass constructor.
-    Drawable.call(this, puddi, parent);
+    PuddiObject.call(this, puddi, parent);
     this._color = "green";
 }
 
 // Set up inheritance.
-Square.prototype = Object.create(Drawable.prototype);
+Square.prototype = Object.create(PuddiObject.prototype);
 Square.prototype.constructor = Square;
 
 Square.prototype._drawSelf = function(ctx) {

@@ -69,9 +69,9 @@ Puddi.prototype.run = function() {
     // initialize this._time to the current time
     this._state.time = performance.now();
 
-    // since "this" won't be bound to the puddi object when cycle is
-    // called, wrap cycle in a closure with the necessary members of
-    // this object.
+    // Since "this" won't be bound to the puddi object when cycle is
+    // called, introduce some of our member fields as locals to be
+    // captured by the 'cycle' closure.
     
     let stop = this._stop;
     let ctx = this._ctx;

@@ -1,10 +1,10 @@
 var Puddi = require('./puddi/puddi.js');
-var Drawable = require('./puddi/puddidrawable.js');
+var PuddiObject = require('./puddi/puddiobject.js');
 var Vector = require('victor');
 
 var Triangle = function(puddi, parent) {
     // Call superclass constructor.
-    Drawable.call(this, puddi, parent);
+    PuddiObject.call(this, puddi, parent);
     this._color = "red";
 
     // Compute the points of an equilateral triangle with edge length 1.
@@ -17,7 +17,7 @@ var Triangle = function(puddi, parent) {
 }
 
 // Set up inheritance.
-Triangle.prototype = Object.create(Drawable.prototype);
+Triangle.prototype = Object.create(PuddiObject.prototype);
 Triangle.prototype.constructor = Triangle;
 
 Triangle.prototype._drawSelf = function(ctx) {

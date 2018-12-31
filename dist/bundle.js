@@ -27,9 +27,9 @@ function init() {
     triangle.setPosition(new Vector(canvas.width/2.0, canvas.height/2.0));
     
     // Give the triangle some special behavior.
-    triangle._updateSelf = function(ms_elapsed) {
+    triangle.setUpdate(function(ms_elapsed) {
 	this.rotate(0.001 * ms_elapsed);
-    }
+    })
 
     // Give the triangle some children.
     mkSquare(puddi, triangle, triangle.getP1(), 0.2);
@@ -40,7 +40,7 @@ function init() {
     canvas.addEventListener('mousedown', function(evt) {
 	isDragging = true;
     }, false);
-    $(window).mouseup(function(){
+    $(window).mouseup(function() {
 	isDragging = false;
     });
     canvas.addEventListener('mousemove', function(evt) {
@@ -62,9 +62,9 @@ function mkSquare(puddi, triangle, pos, scale) {
     square.setScale(scale);
     
     // Give the square some special behavior.
-    square._updateSelf = function(ms_elapsed) {
+    square.setUpdate(function(ms_elapsed) {
 	this.rotate(0.01 * ms_elapsed);
-    }
+    })
 
     return square;
 }
@@ -163,7 +163,7 @@ document.addEventListener('keydown', function(e) {
     }
 });
 
-},{"./puddi/puddi.js":3,"./square.js":6,"./triangle.js":7,"victor":2}],2:[function(require,module,exports){
+},{"./puddi/puddi.js":3,"./square.js":5,"./triangle.js":6,"victor":2}],2:[function(require,module,exports){
 exports = module.exports = Victor;
 
 /**
@@ -1561,9 +1561,9 @@ Puddi.prototype.run = function() {
     // initialize this._time to the current time
     this._state.time = performance.now();
 
-    // since "this" won't be bound to the puddi object when cycle is
-    // called, wrap cycle in a closure with the necessary members of
-    // this object.
+    // Since "this" won't be bound to the puddi object when cycle is
+    // called, introduce some of our member fields as locals to be
+    // captured by the 'cycle' closure.
     
     let stop = this._stop;
     let ctx = this._ctx;
@@ -1672,52 +1672,6 @@ Puddi.prototype.getTranslate = function() {
 module.exports = Puddi;
 
 },{"victor":2}],4:[function(require,module,exports){
-// Drawable puddi object class
-
-var PuddiObject = require('./puddiobject.js');
-
-function PuddiDrawable(puddi, parent) {
-    // call superclass constructor
-    PuddiObject.call(this, puddi, parent);
-    
-    this._color = "black";
-}
-
-// set up inheritance
-PuddiDrawable.prototype = Object.create(PuddiObject.prototype);
-PuddiDrawable.prototype.constructor = PuddiDrawable;
-
-PuddiDrawable.prototype.getColor = function() { return this._color; };
-
-PuddiDrawable.prototype.setColor = function(c) { this._color = c; };
-
-// subclasses should override this function for their drawing code
-PuddiDrawable.prototype._drawSelf = function(ctx) {}
-
-PuddiDrawable.prototype.draw = function(ctx) {
-    ctx.save();
-    this.transform(ctx);
-
-    ctx.fillStyle = this._color;
-    ctx.strokeStyle = this._color;
-
-    // draw myself
-    this._drawSelf(ctx);
-    
-    // draw children
-    for (let o of this._children) {
-	if (o.draw) {
-	    o.draw(ctx);
-	}
-    }
-    
-    ctx.restore();
-};
-
-// EXPORT
-module.exports = PuddiDrawable;
-
-},{"./puddiobject.js":5}],5:[function(require,module,exports){
 // Base puddi object class
 
 var Puddi = require('./puddi.js');
@@ -1738,6 +1692,7 @@ var PuddiObject = function (puddi, parent) {
     this._targetPosition = new Vector(0, 0);
     this._velocity = 0.0;
     this._children = []
+    this._color = "black";
     
     if (parent) {
 	parent.addChild(this);
@@ -1767,7 +1722,10 @@ PuddiObject.prototype.setScale = function(s) { this._scale = s; };
 PuddiObject.prototype.setTargetPosition = function(tp) {
     this._targetPosition = tp;
 };
-PuddiObject.prototype.setVelocity = function(v) { this._velocity = v; };
+PuddiObject.prototype.setVelocity = function(v) {
+    console.log('WARNING: setting object velocity to a negative value: ' + v);
+    this._velocity = v;
+};
 
 PuddiObject.prototype.translate = function(v) {
     this.setPosition(this._position.add(v));
@@ -1827,22 +1785,51 @@ PuddiObject.prototype.delete = function() {
     this.puddi.removeObject(this);
 }
 
+PuddiObject.prototype.getColor = function() { return this._color; };
+PuddiObject.prototype.setColor = function(c) { this._color = c; };
+
+PuddiObject.prototype._drawSelf = function(ctx) {}
+
+PuddiObject.prototype.draw = function(ctx) {
+    ctx.save();
+    this.transform(ctx);
+
+    ctx.fillStyle = this._color;
+    ctx.strokeStyle = this._color;
+
+    // draw myself
+    this._drawSelf(ctx);
+    
+    // draw children
+    for (let o of this._children) {
+	if (o.draw) {
+	    o.draw(ctx);
+	}
+    }
+    
+    ctx.restore();
+};
+
+PuddiObject.prototype.setDraw = function(f) { this._drawSelf = f; }
+PuddiObject.prototype.setUpdate = function(f) { this._updateSelf = f; }
+
+
 // EXPORT
 module.exports = PuddiObject;
 
-},{"./puddi.js":3,"victor":2}],6:[function(require,module,exports){
+},{"./puddi.js":3,"victor":2}],5:[function(require,module,exports){
 var Puddi = require('./puddi/puddi.js');
-var Drawable = require('./puddi/puddidrawable.js');
+var PuddiObject = require('./puddi/puddiobject.js');
 var Vector = require('victor');
 
 var Square = function(puddi, parent) {
     // Call superclass constructor.
-    Drawable.call(this, puddi, parent);
+    PuddiObject.call(this, puddi, parent);
     this._color = "green";
 }
 
 // Set up inheritance.
-Square.prototype = Object.create(Drawable.prototype);
+Square.prototype = Object.create(PuddiObject.prototype);
 Square.prototype.constructor = Square;
 
 Square.prototype._drawSelf = function(ctx) {
@@ -1854,14 +1841,14 @@ Square.prototype._drawSelf = function(ctx) {
 
 module.exports = Square;
 
-},{"./puddi/puddi.js":3,"./puddi/puddidrawable.js":4,"victor":2}],7:[function(require,module,exports){
+},{"./puddi/puddi.js":3,"./puddi/puddiobject.js":4,"victor":2}],6:[function(require,module,exports){
 var Puddi = require('./puddi/puddi.js');
-var Drawable = require('./puddi/puddidrawable.js');
+var PuddiObject = require('./puddi/puddiobject.js');
 var Vector = require('victor');
 
 var Triangle = function(puddi, parent) {
     // Call superclass constructor.
-    Drawable.call(this, puddi, parent);
+    PuddiObject.call(this, puddi, parent);
     this._color = "red";
 
     // Compute the points of an equilateral triangle with edge length 1.
@@ -1874,7 +1861,7 @@ var Triangle = function(puddi, parent) {
 }
 
 // Set up inheritance.
-Triangle.prototype = Object.create(Drawable.prototype);
+Triangle.prototype = Object.create(PuddiObject.prototype);
 Triangle.prototype.constructor = Triangle;
 
 Triangle.prototype._drawSelf = function(ctx) {
@@ -1901,4 +1888,4 @@ Triangle.prototype.getP3 = function() { return this._p3; }
 
 module.exports = Triangle;
 
-},{"./puddi/puddi.js":3,"./puddi/puddidrawable.js":4,"victor":2}]},{},[1]);
+},{"./puddi/puddi.js":3,"./puddi/puddiobject.js":4,"victor":2}]},{},[1]);

@@ -18,6 +18,7 @@ var PuddiObject = function (puddi, parent) {
     this._targetPosition = new Vector(0, 0);
     this._velocity = 0.0;
     this._children = []
+    this._color = "black";
     
     if (parent) {
 	parent.addChild(this);
@@ -47,7 +48,10 @@ PuddiObject.prototype.setScale = function(s) { this._scale = s; };
 PuddiObject.prototype.setTargetPosition = function(tp) {
     this._targetPosition = tp;
 };
-PuddiObject.prototype.setVelocity = function(v) { this._velocity = v; };
+PuddiObject.prototype.setVelocity = function(v) {
+    console.log('WARNING: setting object velocity to a negative value: ' + v);
+    this._velocity = v;
+};
 
 PuddiObject.prototype.translate = function(v) {
     this.setPosition(this._position.add(v));
@@ -106,6 +110,35 @@ PuddiObject.prototype.delete = function() {
     }
     this.puddi.removeObject(this);
 }
+
+PuddiObject.prototype.getColor = function() { return this._color; };
+PuddiObject.prototype.setColor = function(c) { this._color = c; };
+
+PuddiObject.prototype._drawSelf = function(ctx) {}
+
+PuddiObject.prototype.draw = function(ctx) {
+    ctx.save();
+    this.transform(ctx);
+
+    ctx.fillStyle = this._color;
+    ctx.strokeStyle = this._color;
+
+    // draw myself
+    this._drawSelf(ctx);
+    
+    // draw children
+    for (let o of this._children) {
+	if (o.draw) {
+	    o.draw(ctx);
+	}
+    }
+    
+    ctx.restore();
+};
+
+PuddiObject.prototype.setDraw = function(f) { this._drawSelf = f; }
+PuddiObject.prototype.setUpdate = function(f) { this._updateSelf = f; }
+
 
 // EXPORT
 module.exports = PuddiObject;

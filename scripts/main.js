@@ -26,9 +26,9 @@ function init() {
     triangle.setPosition(new Vector(canvas.width/2.0, canvas.height/2.0));
     
     // Give the triangle some special behavior.
-    triangle._updateSelf = function(ms_elapsed) {
+    triangle.setUpdate(function(ms_elapsed) {
 	this.rotate(0.001 * ms_elapsed);
-    }
+    })
 
     // Give the triangle some children.
     mkSquare(puddi, triangle, triangle.getP1(), 0.2);
@@ -39,7 +39,7 @@ function init() {
     canvas.addEventListener('mousedown', function(evt) {
 	isDragging = true;
     }, false);
-    $(window).mouseup(function(){
+    $(window).mouseup(function() {
 	isDragging = false;
     });
     canvas.addEventListener('mousemove', function(evt) {
@@ -61,9 +61,9 @@ function mkSquare(puddi, triangle, pos, scale) {
     square.setScale(scale);
     
     // Give the square some special behavior.
-    square._updateSelf = function(ms_elapsed) {
+    square.setUpdate(function(ms_elapsed) {
 	this.rotate(0.01 * ms_elapsed);
-    }
+    })
 
     return square;
 }
