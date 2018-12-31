@@ -7,7 +7,8 @@ var Triangle = function(puddi, parent) {
     PuddiObject.call(this, puddi, parent);
     this._color = "red";
 
-    // Compute the points of an equilateral triangle with edge length 1.
+    // Compute the points of an equilateral triangle with edge length
+    // 1, so that the center of the triangle is at the origin (0, 0).
     let height = Math.sqrt(3/4);
     let y1 = 1 / Math.sqrt(3);
     let y2 = height - y1;

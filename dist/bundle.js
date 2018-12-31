@@ -28,7 +28,9 @@ function init() {
     
     // Give the triangle some special behavior.
     triangle.setUpdate(function(ms_elapsed) {
-	this.rotate(0.001 * ms_elapsed);
+	let s_elapsed = ms_elapsed / 1000;
+	let rad_per_s = 1;
+	this.rotate(rad_per_s * s_elapsed);
     })
 
     // Give the triangle some children.
@@ -63,7 +65,9 @@ function mkSquare(puddi, triangle, pos, scale) {
     
     // Give the square some special behavior.
     square.setUpdate(function(ms_elapsed) {
-	this.rotate(0.01 * ms_elapsed);
+	let s_elapsed = ms_elapsed / 1000;
+	let rad_per_s = 10;
+	this.rotate(rad_per_s * s_elapsed);
     })
 
     return square;
