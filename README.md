@@ -1,9 +1,12 @@
 # puddi
 
-Puddi is browser 2D graphics library providing a thin layer of
+Puddi is a browser 2D graphics library providing a thin layer of
 object-oriented abstractions over HTML5 Canvas.
 
 [Live demo](https://bagnalla.github.io/puddi_hello_world/).
+
+[Example project](https://bagnalla.github.io/AAL/) using an earlier
+version of puddi.
 
 Type 'make' in the scripts directory to build dist/bundle.js.
 
@@ -17,7 +20,7 @@ runtime is represented by a Puddi object. Every Puddi object is
 associated with exactly one canvas element.
 
 Puddi maintains a list of root objects (those with no parents), and is
-responsible for regularly invoking their render and update methods (if
+responsible for regularly invoking their update and draw methods (if
 available). It does so by hooking into the browser's render loop.
 
 Some important functions:
