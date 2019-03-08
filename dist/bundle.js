@@ -1692,7 +1692,8 @@ var PuddiObject = function (puddi, parent) {
     this._id = idCounter++;
     this._position = new Vector(0, 0);
     this._rotation = 0.0;
-    this._scale = 1.0
+    this._scale_x = 1.0
+    this._scale_y = 1.0
     this._targetPosition = new Vector(0, 0);
     this._velocity = 0.0;
     this._children = []
@@ -1714,7 +1715,8 @@ PuddiObject.prototype.equals = function(o) {
 PuddiObject.prototype.getId = function() { return this._id; };
 PuddiObject.prototype.getPosition = function() { return this._position; };
 PuddiObject.prototype.getRotation = function() { return this._rotation; };
-PuddiObject.prototype.getScale = function() { return this._scale; };
+PuddiObject.prototype.getScaleX = function() { return this._scale_x; };
+PuddiObject.prototype.getScaleT = function() { return this._scale_y; };
 PuddiObject.prototype.getTargetPosition = function() {
     return this._targetPosition;
 };
@@ -1722,7 +1724,9 @@ PuddiObject.prototype.getVelocity = function() { return this._velocity; };
 
 PuddiObject.prototype.setPosition = function(p) { this._position = p; };
 PuddiObject.prototype.setRotation = function(r) { this._rotation = r; };
-PuddiObject.prototype.setScale = function(s) { this._scale = s; };
+PuddiObject.prototype.setScaleX = function(s) { this._scale_x = s; };
+PuddiObject.prototype.setScaleY = function(s) { this._scale_y = s; };
+PuddiObject.prototype.setScale = function(s) { this._scale_x = this._scale_y = s; };
 PuddiObject.prototype.setTargetPosition = function(tp) {
     this._targetPosition = tp;
 };
@@ -1735,7 +1739,10 @@ PuddiObject.prototype.translate = function(v) {
     this.setPosition(this._position.add(v));
 };
 PuddiObject.prototype.rotate = function(r) { this._rotation += r; };
-PuddiObject.prototype.scale = function(s) { this._scale *= s; };
+PuddiObject.prototype.scale = function(s) {
+    this._scale_x *= s;
+    this._scale_y *= s;
+};
 
 PuddiObject.prototype.addChild = function(o) { this._children.push(o); };
 PuddiObject.prototype.removeChild = function(o) {
@@ -1753,7 +1760,7 @@ PuddiObject.prototype.clearChildren = function() {
 }
 
 PuddiObject.prototype.transform = function(ctx) {
-    ctx.transform(this._scale, 0, 0, this._scale,
+    ctx.transform(this._scale_x, 0, 0, this._scale_y,
 		  this._position.x, this._position.y);
     ctx.rotate(this._rotation);
 };
@@ -1855,7 +1862,8 @@ var Triangle = function(puddi, parent) {
     PuddiObject.call(this, puddi, parent);
     this._color = "red";
 
-    // Compute the points of an equilateral triangle with edge length 1.
+    // Compute the points of an equilateral triangle with edge length
+    // 1, so that the center of the triangle is at the origin (0, 0).
     let height = Math.sqrt(3/4);
     let y1 = 1 / Math.sqrt(3);
     let y2 = height - y1;
